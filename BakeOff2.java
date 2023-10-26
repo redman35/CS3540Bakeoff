@@ -27,6 +27,10 @@ public class BakeOff2 extends PApplet {
 	float logoY = 500;
 	float logoZ = 50f;
 	float logoRotation = 0;
+	
+	//Speed setting
+	float speedSetting = 5f;
+	boolean followMouse = false;
 
 	// The argument passed to main must match the class name
 	public static void main(String[] args) {
@@ -130,14 +134,16 @@ public class BakeOff2 extends PApplet {
       float stepSize = inchToPix(0.02f);
       
       Button[] buttons = {
-        new Button(x - buttonPaddingX, y - buttonPaddingY, "CCW", () -> logoRotation--),
-        new Button(x + buttonPaddingX, y - buttonPaddingY, "CW", () -> logoRotation++),
-        new Button(x - 2 * buttonPaddingX, y + buttonPaddingY, "-", () -> logoZ = constrain(logoZ - stepSize, (float)0.01, inchToPix(4f))),
-        new Button(x - 2 * buttonPaddingX, y - buttonPaddingY, "+", () -> logoZ = constrain(logoZ + stepSize, (float)0.01, inchToPix(4f))),
-        new Button(x - buttonPaddingX, y + buttonPaddingY, "<", () -> logoX -= stepSize),
-        new Button(x + buttonPaddingX, y + buttonPaddingY, ">", () -> logoX += stepSize),
-        new Button(x, y - buttonPaddingY, "˄", () -> logoY -= stepSize),
-        new Button(x, y + buttonPaddingY, "˅", () -> logoY += stepSize)
+        new Button(x - buttonPaddingX, y - buttonPaddingY, "CCW", () -> logoRotation -= speedSetting),
+        new Button(x + buttonPaddingX, y - buttonPaddingY, "CW", () -> logoRotation += speedSetting),
+        new Button(x - 2 * buttonPaddingX, y + buttonPaddingY, "-", () -> logoZ = constrain(logoZ - (stepSize+speedSetting/2), (float)0.01, inchToPix(4f))),
+        new Button(x - 2 * buttonPaddingX, y - buttonPaddingY, "+", () -> logoZ = constrain(logoZ + (stepSize+speedSetting/2), (float)0.01, inchToPix(4f))),
+        new Button(x - buttonPaddingX, y + buttonPaddingY, "<", () -> logoX -= (stepSize+speedSetting)),
+        new Button(x + buttonPaddingX, y + buttonPaddingY, ">", () -> logoX += (stepSize+speedSetting)),
+        new Button(x, y - buttonPaddingY, "˄", () -> logoY -= (stepSize+speedSetting)),
+        new Button(x, y + buttonPaddingY, "˅", () -> logoY += (stepSize+speedSetting)),
+        new Button(x - 3 * buttonPaddingX, y - buttonPaddingY, "Sp+", () -> speedSetting = constrain(speedSetting +0.1f, (float) 0.01,7f)),
+        new Button(x - 3 * buttonPaddingX, y + buttonPaddingY, "Sp-", () -> speedSetting = constrain(speedSetting -0.1f, (float) 0.01,7f))
       };
       
       for (Button button : buttons) {
@@ -169,7 +175,38 @@ public class BakeOff2 extends PApplet {
         }
       }
     }
+    
+    public void keyPressed() {
+    	if(key == ' ') {
+    		followMouse = true;
+    	}
+    	if(key == 'r') {
+    		logoRotation += speedSetting;
+    	}
+    	if(key == 'q') {
+    		speedSetting += 0.1;
+    		println("Speed: "+speedSetting);
+    	}
+    	if(key == 'a') {
+    		speedSetting -= 0.1;
+    		println("Speed: "+speedSetting);
+    	}
+    }
+    
+    public void keyReleased() {
+    	if(key == ' ') {
+    		followMouse = false;
+    	}
+    }
 
+    public void mouseMoved() {
+    	if(followMouse) {
+    		logoX = mouseX;
+    		logoY = mouseY;
+    	}
+    }
+    
+    
 	public void mousePressed() {
 		if (startTime == 0) // start time on the instant of the first user click
 		{
@@ -181,7 +218,7 @@ public class BakeOff2 extends PApplet {
 	public void mouseReleased() {
 		// check to see if user clicked middle of screen within 3 inches, which this
 		// code uses as a submit button
-		if (dist(width / 2, height / 2, mouseX, mouseY) < inchToPix(3f)) {
+		if (dist(width / 2, height / 2, mouseX, mouseY) < inchToPix(2f)) {
 			if (userDone == false && !checkForSuccess())
 				errorCount++;
 
