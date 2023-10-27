@@ -17,6 +17,11 @@ public class BakeOff2 extends PApplet {
 	int finishTime = 0; // records the time of the final click
 	boolean userDone = false; // is the user done
 
+	boolean wPressed = false;
+	boolean aPressed = false;
+	boolean sPressed = false;
+	boolean dPressed = false;
+
 	final int screenPPI = 72; // what is the DPI of the screen you are using
 	// you can test this by drawing a 72x72 pixel rectangle in code, and then
 	// confirming with a ruler it is 1x1 inch.
@@ -27,8 +32,8 @@ public class BakeOff2 extends PApplet {
 	float logoY = 500;
 	float logoZ = 50f;
 	float logoRotation = 0;
-	
-	//Speed setting
+
+	// Speed setting
 	float speedSetting = 5f;
 	boolean followMouse = false;
 
@@ -123,90 +128,172 @@ public class BakeOff2 extends PApplet {
 		fill(255);
 		scaffoldControlLogic(); // you are going to want to replace this!
 		text("Trial " + (trialIndex + 1) + " of " + trialCount, width / 2, inchToPix(.8f));
+
+
+		float stepSize = inchToPix(0.02f);
+
+		if (wPressed && aPressed) {
+			logoY -= (stepSize + speedSetting);
+			logoX -= (stepSize + speedSetting);
+		} else if (wPressed && dPressed) {
+			logoY -= (stepSize + speedSetting);
+			logoX += (stepSize + speedSetting);
+		} else if (sPressed && aPressed) {
+			logoY += (stepSize + speedSetting);
+			logoX -= (stepSize + speedSetting);
+		} else if (sPressed && dPressed) {
+			logoY += (stepSize + speedSetting);
+			logoX += (stepSize + speedSetting);
+		} else {
+			// Handle individual key presses (w, a, s, d) for cardinal directions
+			if (wPressed) {
+				logoY -= (stepSize + speedSetting);
+			}
+			if (sPressed) {
+				logoY += (stepSize + speedSetting);
+			}
+			if (aPressed) {
+				logoX -= (stepSize + speedSetting);
+			}
+			if (dPressed) {
+				logoX += (stepSize + speedSetting);
+			}
+		}
 	}
 
 	// my example design for control, which is terrible
-  void scaffoldControlLogic() {
-      float x = width - inchToPix(1.5f);
-      float y = height - inchToPix(1f);
-      float buttonPaddingX = inchToPix(1f);
-      float buttonPaddingY = inchToPix(0.5f);
-      float stepSize = inchToPix(0.02f);
-      
-      Button[] buttons = {
-        new Button(x - buttonPaddingX, y - buttonPaddingY, "CCW", () -> logoRotation -= speedSetting),
-        new Button(x + buttonPaddingX, y - buttonPaddingY, "CW", () -> logoRotation += speedSetting),
-        new Button(x - 2 * buttonPaddingX, y + buttonPaddingY, "-", () -> logoZ = constrain(logoZ - (stepSize+speedSetting/2), (float)0.01, inchToPix(4f))),
-        new Button(x - 2 * buttonPaddingX, y - buttonPaddingY, "+", () -> logoZ = constrain(logoZ + (stepSize+speedSetting/2), (float)0.01, inchToPix(4f))),
-        new Button(x - buttonPaddingX, y + buttonPaddingY, "<", () -> logoX -= (stepSize+speedSetting)),
-        new Button(x + buttonPaddingX, y + buttonPaddingY, ">", () -> logoX += (stepSize+speedSetting)),
-        new Button(x, y - buttonPaddingY, "˄", () -> logoY -= (stepSize+speedSetting)),
-        new Button(x, y + buttonPaddingY, "˅", () -> logoY += (stepSize+speedSetting)),
-        new Button(x - 3 * buttonPaddingX, y - buttonPaddingY, "Sp+", () -> speedSetting = constrain(speedSetting +0.1f, (float) 0.01,7f)),
-        new Button(x - 3 * buttonPaddingX, y + buttonPaddingY, "Sp-", () -> speedSetting = constrain(speedSetting -0.1f, (float) 0.01,7f))
-      };
-      
-      for (Button button : buttons) {
-        button.display();
-      }
-    }
+	void scaffoldControlLogic() {
+		float x = width - inchToPix(1.5f);
+		float y = height - inchToPix(1f);
+		float buttonPaddingX = inchToPix(1f);
+		float buttonPaddingY = inchToPix(0.5f);
+		float stepSize = inchToPix(0.02f);
 
-    class Button {
-      float x, y;
-      String label;
-      Runnable action;
+		Button[] buttons = {
+				new Button(x - buttonPaddingX, y - buttonPaddingY, "CCW\n(<)", () -> logoRotation -= speedSetting),
+				new Button(x + buttonPaddingX, y - buttonPaddingY, "CW\n(>)", () -> logoRotation += speedSetting),
+				new Button(x - 2 * buttonPaddingX, y + buttonPaddingY, "-\n(˅)",
+						() -> logoZ = constrain(logoZ - (stepSize + speedSetting / 2), (float) 0.01, inchToPix(4f))),
+				new Button(x - 2 * buttonPaddingX, y - buttonPaddingY, "+\n(˄)",
+						() -> logoZ = constrain(logoZ + (stepSize + speedSetting / 2), (float) 0.01, inchToPix(4f))),
+				new Button(x - buttonPaddingX, y + buttonPaddingY, "-X\n(A)", () -> logoX -= (stepSize + speedSetting)),
+				new Button(x + buttonPaddingX, y + buttonPaddingY, "+X\n(D)", () -> logoX += (stepSize + speedSetting)),
+				new Button(x, y - buttonPaddingY, "+Y\n(W)", () -> logoY -= (stepSize + speedSetting)),
+				new Button(x, y + buttonPaddingY, "-Y\n(S)", () -> logoY += (stepSize + speedSetting)),
+				new Button(x - 3 * buttonPaddingX, y - buttonPaddingY, "Sp+\n(E)",
+						() -> speedSetting = constrain(speedSetting + 0.1f, (float) 0.01, 7f)),
+				new Button(x - 3 * buttonPaddingX, y + buttonPaddingY, "Sp-\n(Q)",
+						() -> speedSetting = constrain(speedSetting - 0.1f, (float) 0.01, 7f)) };
 
-      Button(float x, float y, String label, Runnable action) {
-        this.x = x;
-        this.y = y;
-        this.label = label;
-        this.action = action;
-      }
+		for (Button button : buttons) {
+			button.display();
+		}
+	}
 
-      void display() {
-        float buttonSize = inchToPix(1f);
-        float distance = dist(x, y, mouseX, mouseY);
-        fill(25, 25, 25, 50);
-        rect(x, y, buttonSize, buttonSize, buttonSize / 5);
-        fill(255, 255, 255);
-        text(label, x, y);
-        if (mousePressed && distance < buttonSize / 2) {
-          action.run();
-        }
-      }
-    }
-    
-    public void keyPressed() {
-    	if(key == ' ') {
-    		followMouse = true;
-    	}
-    	if(key == 'r') {
-    		logoRotation += speedSetting;
-    	}
-    	if(key == 'q') {
-    		speedSetting += 0.1;
-    		println("Speed: "+speedSetting);
-    	}
-    	if(key == 'a') {
-    		speedSetting -= 0.1;
-    		println("Speed: "+speedSetting);
-    	}
-    }
-    
-    public void keyReleased() {
-    	if(key == ' ') {
-    		followMouse = false;
-    	}
-    }
+	class Button {
+		float x, y;
+		String label;
+		Runnable action;
 
-    public void mouseMoved() {
-    	if(followMouse) {
-    		logoX = mouseX;
-    		logoY = mouseY;
-    	}
-    }
-    
-    
+		Button(float x, float y, String label, Runnable action) {
+			this.x = x;
+			this.y = y;
+			this.label = label;
+			this.action = action;
+		}
+
+		void display() {
+			float buttonSize = inchToPix(1f);
+			float distance = dist(x, y, mouseX, mouseY);
+			fill(25, 25, 25, 50);
+			rect(x, y, buttonSize, buttonSize, buttonSize / 5);
+			fill(255, 255, 255);
+			text(label, x, y);
+			if (mousePressed && distance < buttonSize / 2) {
+				action.run();
+			}
+		}
+	}
+
+	public void keyPressed() {
+		float stepSize = inchToPix(0.02f);
+
+		if (key == 'w') {
+			wPressed = true;
+		}
+		if (key == 's') {
+			sPressed = true;
+		}
+		if (key == 'a') {
+			aPressed = true;
+		}
+		if (key == 'd') {
+			dPressed = true;
+		}
+
+
+		if (key == CODED) {
+			if (keyCode == UP) {
+				logoZ = constrain(logoZ + (stepSize + speedSetting / 2), (float) 0.01, inchToPix(4f));
+			}
+			if (keyCode == DOWN) {
+				logoZ = constrain(logoZ - (stepSize + speedSetting / 2), (float) 0.01, inchToPix(4f));
+			}
+			if (keyCode == LEFT) {
+				logoRotation -= speedSetting;
+			}
+			if (keyCode == RIGHT) {
+				logoRotation += speedSetting;
+			}
+		}
+
+
+		if (key == ' ') {
+			followMouse = true;
+		}
+		if (key == 'r') {
+			logoRotation += speedSetting;
+		}
+		if (key == 'e') {
+			speedSetting += 0.5;
+			println("Speed: " + speedSetting);
+
+		}
+		if (key == 'q') {
+			speedSetting -= 0.5;
+			if (speedSetting <= 0) {
+				speedSetting = 0;
+			}
+			println("Speed: " + speedSetting);
+		}
+
+	}
+
+	public void keyReleased() {
+		if (key == 'w') {
+			wPressed = false;
+		}
+		if (key == 's') {
+			sPressed = false;
+		}
+		if (key == 'a') {
+			aPressed = false;
+		}
+		if (key == 'd') {
+			dPressed = false;
+		}
+		if (key == ' ') {
+			followMouse = false;
+		}
+	}
+
+	public void mouseMoved() {
+		if (followMouse) {
+			logoX = mouseX;
+			logoY = mouseY;
+		}
+	}
+
 	public void mousePressed() {
 		if (startTime == 0) // start time on the instant of the first user click
 		{
