@@ -36,6 +36,10 @@ public class BakeOff2 extends PApplet {
 	// Speed setting
 	float speedSetting = 5f;
 	boolean followMouse = false;
+	
+	boolean move, rotate, resize;
+	float originalMouseX, originalMouseY;
+	float originalX, originalY, originalRotation, originalSize;
 
 	// The argument passed to main must match the class name
 	public static void main(String[] args) {
@@ -159,6 +163,28 @@ public class BakeOff2 extends PApplet {
 				logoX += (stepSize + speedSetting);
 			}
 		}
+		mouseControlLogic();
+	}
+	
+	
+	void mouseControlLogic() {
+		// Update logo position, rotation, and size based on keyboard input
+		  if (move) {
+			  float deltaX = mouseX - originalMouseX;
+			  float deltaY = mouseY - originalMouseY;
+			  logoX = originalX + deltaX;
+			  logoY = originalY + deltaY;
+		  }
+
+		  if (rotate) {
+			  float deltaAngle = map(mouseX - originalMouseX, -width/2, width/2, -180, 180);
+			  logoRotation = originalRotation + deltaAngle;
+		  }
+
+		  if (resize) {
+			  float deltaSize = mouseY - originalMouseY;
+			  logoZ = originalSize - deltaSize;
+		  }
 	}
 
 	// my example design for control, which is terrible
@@ -266,6 +292,24 @@ public class BakeOff2 extends PApplet {
 			}
 			println("Speed: " + speedSetting);
 		}
+		
+		if (key == 'f' || key == 'F') {
+		move = true;
+	    originalMouseX = mouseX;
+	    originalMouseY = mouseY;
+	    originalX = logoX;
+	    originalY = logoY;
+	  } else if (key == 'g' || key == 'G') {
+		rotate = true;
+	    originalMouseX = mouseX;
+	    originalMouseY = mouseY;
+	    originalRotation = logoRotation;
+	  } else if (key == 'h' || key == 'H') {
+		resize = true;
+	    originalMouseX = mouseX;
+	    originalMouseY = mouseY;
+	    originalSize = logoZ;
+	  }
 
 	}
 
@@ -285,6 +329,14 @@ public class BakeOff2 extends PApplet {
 		if (key == ' ') {
 			followMouse = false;
 		}
+		
+		if (key == 'f' || key == 'F') {
+		    move = false;
+		  } else if (key == 'g' || key == 'G') {
+		    rotate = false;
+		  } else if (key == 'h' || key == 'H') {
+		    resize = false;
+		  }
 	}
 
 	public void mouseMoved() {
