@@ -170,12 +170,12 @@ public class BakeOff2 extends PApplet {
 		float stepSize = inchToPix(0.02f);
 
 		Button[] buttons = {
-				new Button(x - buttonPaddingX, y - buttonPaddingY, "CCW\n(<)", () -> logoRotation -= speedSetting),
-				new Button(x + buttonPaddingX, y - buttonPaddingY, "CW\n(>)", () -> logoRotation += speedSetting),
+				new Button(x - buttonPaddingX, y - buttonPaddingY, "CCW\n(<)", () -> logoRotation -= stepSize),
+				new Button(x + buttonPaddingX, y - buttonPaddingY, "CW\n(>)", () -> logoRotation += stepSize),
 				new Button(x - 2 * buttonPaddingX, y + buttonPaddingY, "-\n(˅)",
-						() -> logoZ = constrain(logoZ - (stepSize + speedSetting / 2), (float) 0.01, inchToPix(4f))),
+						() -> logoZ = constrain(logoZ - (stepSize), (float) 0.01, inchToPix(4f))),
 				new Button(x - 2 * buttonPaddingX, y - buttonPaddingY, "+\n(˄)",
-						() -> logoZ = constrain(logoZ + (stepSize + speedSetting / 2), (float) 0.01, inchToPix(4f))),
+						() -> logoZ = constrain(logoZ + (stepSize), (float) 0.01, inchToPix(4f))),
 				new Button(x - buttonPaddingX, y + buttonPaddingY, "-X\n(A)", () -> logoX -= (stepSize + speedSetting)),
 				new Button(x + buttonPaddingX, y + buttonPaddingY, "+X\n(D)", () -> logoX += (stepSize + speedSetting)),
 				new Button(x, y - buttonPaddingY, "+Y\n(W)", () -> logoY -= (stepSize + speedSetting)),
@@ -240,10 +240,10 @@ public class BakeOff2 extends PApplet {
 				logoZ = constrain(logoZ - (stepSize + speedSetting / 2), (float) 0.01, inchToPix(4f));
 			}
 			if (keyCode == LEFT) {
-				logoRotation -= speedSetting;
+				logoRotation -= stepSize;
 			}
 			if (keyCode == RIGHT) {
-				logoRotation += speedSetting;
+				logoRotation += stepSize;
 			}
 		}
 
@@ -305,7 +305,7 @@ public class BakeOff2 extends PApplet {
 	public void mouseReleased() {
 		// check to see if user clicked middle of screen within 3 inches, which this
 		// code uses as a submit button
-		if (dist(width / 2, height / 2, mouseX, mouseY) < inchToPix(2f)) {
+		if (dist(width / 2, height / 2, mouseX, mouseY) < inchToPix(2.5f)) {
 			if (userDone == false && !checkForSuccess())
 				errorCount++;
 
